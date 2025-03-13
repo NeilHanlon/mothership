@@ -30,7 +30,7 @@ archives:
 nfpms:
   - id: mship_worker_client
     package_name: "mship_worker_client"
-    maintainer: "Mustafa Gezen <mustafa@ciq.com>"
+    maintainer: "Mustafa Gezen <mustafa@openela.org>"
     vendor: "OpenELA"
     homepage: "https://openela.org"
     license: "BSD-2"
