@@ -73,6 +73,17 @@ ko_build("github.com/openela/mothership/cmd/mship_server", "./cmd/mship_server")
 ko_build("github.com/openela/mothership/cmd/mship_admin_server", "./cmd/mship_admin_server")
 ko_build("github.com/openela/mothership/cmd/mship_worker_server", "./cmd/mship_worker_server")
 
+# Build UI image (live rebuild enabled)
+docker_build('ghcr.io/openela/mothership-ui', './ui',
+    build_args={'node_env': 'development'},
+    # entrypoint='',
+    live_update=[
+        sync('./ui', '/app'),
+        run('cd /app && pnpm install --frozen-lockfile && pnpm run build', trigger=['./ui/package.json', './ui/pnpm-lock.lock']),
+
+        run('touch /app/server.ts', trigger='./server.ts'),
+])
+
 # Assign local port-forwards for easier access
 k8s_resource("mothership-api-deployment", port_forwards=6677, resource_deps=[
     "postgresql", "valkey-primary", "dev-dex"
