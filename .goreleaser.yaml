@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - main: ./cmd/mship_worker_client/
+    binary: mship_worker_client
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+
+archives:
+  - formats: [tar.gz]
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+
+nfpms:
+  - id: mship_worker_client
+    package_name: "mship_worker_client"
+    maintainer: "Mustafa Gezen <mustafa@openela.org>"
+    vendor: "OpenELA"
+    homepage: "https://openela.org"
+    license: "BSD-2"
+    description: |-
+      The mothership worker client package.
+    formats:
+      - rpm
+    version_metadata: git
+    dependencies:
+      - systemd
+    contents:
+      - src: cmd/mship_worker_client/packaging/mship_worker_client.service
+        dst: /etc/systemd/system/mship_worker_client.service
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+release:
+  footer: >-
+
+    ---
+
+    Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
